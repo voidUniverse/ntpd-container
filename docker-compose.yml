@@ -1,0 +1,28 @@
+version: '3.4'
+services:
+  ntpd:
+    build: .
+    image: ntpd:latest
+    container_name: ntpd
+    hostname: ntpd
+    restart: always 
+    cap_add:
+      - SYS_TIME
+      - SYS_NICE
+      - SYS_RESOURCE
+    privileged: true
+    volumes:
+      - ./etc/ntp.conf:/etc/ntp.conf:ro
+      - ./var/lib/ntp/drift:/var/lib/ntp/drift:rw
+    tmpfs:
+      - /var/run:rw,noexec,nosuid,size=16m
+      - /var/db:rw,noexec,nosuid,size=32m
+    read_only: true
+    network_mode: bridge 
+    ports:
+      - "123:123/udp"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "64m"
+
